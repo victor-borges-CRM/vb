@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis-pod
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis
+  template:
+    metadata:
+      labels:
+        app: redis
+    spec:
+      containers:
+        - name: redis
+          image: redis
+          ports:
+            - containerPort: 6379
+          volumeMounts:
+            - name: redis-config-volume
+              mountPath: /etc/redis
+              readOnly: true
+          env:
+            - name: redis_minha_chave
+              valueFrom:
+                configMapKeyRef:
+                  name: redis-config
+                  key: minha-chave
+            - name: redis_outra_chave
+              valueFrom:
+                configMapKeyRef:
+                  name: redis-config
+                  key: outra-chave
+      volumes:
+        - name: redis-config-volume
+          configMap:
+            name: redis-config
+            items:
+              - key: redis.conf
+                path: redis.conf

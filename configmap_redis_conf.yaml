@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: redis-config
+data:
+  minha-chave: "valor1-da-minha-chave"
+  outra-chave: "valor2-da-outra-chave"
+  redis.conf: |
+    timeout 604800
+    maxmemory-policy allkeys-lru
+    appendonly yes

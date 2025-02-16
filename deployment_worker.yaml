@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: worker-pod
+  labels:
+    app: worker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: worker
+  template:
+    metadata:
+      labels:
+        app: worker
+    spec:
+      containers:
+      - name: alpine
+        image: redis:alpine
+        command: ["/bin/sh", "-c"]
+        args:
+          - while true; do
+              redis-cli -h redis-service keys "*" > /data/keys.txt;
+              sleep 1800;
+            done;
+          - redis-cli -h redis-service GET minha-chave > /data/print.txt;
+            cat /data/print.txt;
