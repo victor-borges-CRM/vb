@@ -1,3 +1,4 @@
+
 # Implantação do Redis com Worker Pod e ConfigMap
 
 ## Descrição
@@ -54,11 +55,13 @@ spec:
           configMap:
             name: redis-config
             items:
-              - key: redis.co
+              - key: redis.conf
+                path: redis.conf
+```
 
-### 2. **Worker Deployment** 
+### 2. **Worker Deployment**
 
-O Worker Pod consulta continuamente o serviço Redis, buscando as chaves e imprimindo o valor de uma chave específica em um arquivo. Este pod usa a imagem redis:alpine e um loop simples para interagir com o Redis.
+O Worker Pod consulta continuamente o serviço Redis, buscando as chaves e imprimindo o valor de uma chave específica em um arquivo. Este pod usa a imagem `redis:alpine` e um loop simples para interagir com o Redis.
 
 ```yaml
 apiVersion: apps/v1
@@ -88,10 +91,11 @@ spec:
             done;
           - redis-cli -h redis-service GET minha-chave > /data/print.txt;
             cat /data/print.txt;
+```
 
 ### 3. **ConfigMap Redis**
 
-O ConfigMap armazena os valores e chaves do Redis. Ele inclui duas chaves (minha-chave e outra-chave) e um arquivo redis.conf para configurar o Redis.
+O ConfigMap armazena os valores e chaves do Redis. Ele inclui duas chaves (`minha-chave` e `outra-chave`) e um arquivo `redis.conf` para configurar o Redis.
 
 ```yaml
 apiVersion: v1
@@ -105,7 +109,7 @@ data:
     timeout 604800
     maxmemory-policy allkeys-lru
     appendonly yes
-
+```
 
 ### 4. **Service Redis**
 
@@ -125,13 +129,15 @@ spec:
     targetPort: 6379
   selector:
     app: redis
+```
 
 ## Uso
 
-Implantar os Pods Redis e Worker
 Para implantar o Redis e o Worker Pod, use os seguintes comandos:
+
+```bash
 kubectl apply -f redis-configmap.yaml
 kubectl apply -f redis-deployment.yaml
 kubectl apply -f redis-service.yaml
 kubectl apply -f worker-deployment.yaml
-
+```
